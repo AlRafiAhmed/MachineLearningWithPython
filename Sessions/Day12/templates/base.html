@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Cost Predictor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-2xl font-bold">Insurance Predictor</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="hover:text-blue-200 {% if content == 'home' %}text-blue-200{% endif %}">Home</a>
+                    <a href="/predict" class="hover:text-blue-200 {% if content == 'predict' %}text-blue-200{% endif %}">Predict</a>
+                    <a href="/model-info" class="hover:text-blue-200 {% if content == 'model_info' %}text-blue-200{% endif %}">Model Info</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden pb-4">
+                <a href="/" class="block py-2 hover:text-blue-200 {% if content == 'home' %}text-blue-200{% endif %}">Home</a>
+                <a href="/predict" class="block py-2 hover:text-blue-200 {% if content == 'predict' %}text-blue-200{% endif %}">Predict</a>
+                <a href="/model-info" class="block py-2 hover:text-blue-200 {% if content == 'model_info' %}text-blue-200{% endif %}">Model Info</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        {% if content == 'home' %}
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Welcome to Insurance Cost Predictor</h1>
+                <p class="text-gray-600 mb-6">
+                    Our machine learning model helps predict insurance costs based on various factors such as age, BMI, smoking status, and region.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="/predict" class="bg-blue-50 rounded-lg p-6 hover:shadow-md transition">
+                        <h2 class="text-xl font-semibold text-blue-800 mb-2">Make a Prediction</h2>
+                        <p class="text-gray-600">Get an estimate of your insurance costs.</p>
+                    </a>
+                    <a href="/model-info" class="bg-green-50 rounded-lg p-6 hover:shadow-md transition">
+                        <h2 class="text-xl font-semibold text-green-800 mb-2">Model Information</h2>
+                        <p class="text-gray-600">Learn about our model's performance and metrics.</p>
+                    </a>
+                </div>
+            </div>
+
+        {% elif content == 'predict' %}
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Predict Insurance Cost</h1>
+                
+                {% if prediction %}
+                <div class="mb-8 p-4 bg-green-50 rounded-lg">
+                    <h2 class="text-xl font-semibold text-green-800 mb-2">Predicted Insurance Cost:</h2>
+                    <p class="text-4xl font-bold text-green-600">{{ prediction }}</p>
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="mb-8 p-4 bg-red-50 rounded-lg">
+                    <p class="text-red-600">{{ error }}</p>
+                </div>
+                {% endif %}
+
+                <form method="POST" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Age</label>
+                            <input type="number" name="age" required min="18" max="100"
+                                   class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Sex</label>
+                            <select name="sex" required class="w-full p-2 border rounded">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">BMI</label>
+                            <input type="number" name="bmi" required step="0.1" min="15" max="50"
+                                   class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Children</label>
+                            <input type="number" name="children" required min="0" max="10"
+                                   class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Smoker</label>
+                            <select name="smoker" required class="w-full p-2 border rounded">
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Region</label>
+                            <select name="region" required class="w-full p-2 border rounded">
+                                <option value="northeast">Northeast</option>
+                                <option value="northwest">Northwest</option>
+                                <option value="southeast">Southeast</option>
+                                <option value="southwest">Southwest</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+                        Get Prediction
+                    </button>
+                </form>
+            </div>
+
+        {% elif content == 'model_info' %}
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Model Information</h1>
+                
+                {% if error %}
+                <div class="mb-8 p-4 bg-red-50 rounded-lg">
+                    <p class="text-red-600">{{ error }}</p>
+                </div>
+                {% else %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-blue-800 mb-2">R² Score</h2>
+                        <p class="text-4xl font-bold text-blue-600">{{ "%.2f"|format(metrics.r2 * 100) }}%</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-green-800 mb-2">Mean Absolute Error</h2>
+                        <p class="text-4xl font-bold text-green-600">${{ "%.2f"|format(metrics.mae) }}</p>
+                    </div>
+                </div>
+                <div class="mt-6 bg-gray-50 rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Root Mean Squared Error</h2>
+                    <p class="text-2xl font-bold text-gray-600">${{ "%.2f"|format(metrics.rmse) }}</p>
+                </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Insurance Cost Predictor. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu JavaScript -->
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html> 
